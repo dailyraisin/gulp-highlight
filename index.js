@@ -5,11 +5,11 @@ var cheerio = require('cheerio');
 var hljs = require('highlight.js');
 
 module.exports = function (options) {
-  var highlight = function (str) {
+  var highlight = function (str, options) {
     var $ = cheerio.load(str);
     $('code').each(function (index, code) {
       if (!$(code).hasClass('nohighlight')) {
-        $(code).html(hljs.highlightAuto($(code).html()).value);
+        $(code).html(hljs.highlightAuto($(code).html(), options.languages).value);
       }
     });
     return $.html() || str;
@@ -26,7 +26,7 @@ module.exports = function (options) {
     }
 
     try {
-      file.contents = new Buffer(highlight(file.contents.toString()), options);
+      file.contents = new Buffer(highlight(file.contents.toString(), options), options.bufferOptions);
     } catch (err) {
       this.emit('error', new gutil.PluginError('gulp-highlight', err));
     }
